@@ -57,4 +57,14 @@ class Client(BaseModel):
     class Config:
         arbitrary_types_allowed = True
         json_encoders = {ObjectId: str}
+        schema_extra = {
+            "example": {
+                "name": "facebook inc.",
+                "email": "jdoe@facebook.com",
+                "address": "1601 WILLOW ROAD MENLO PARK CA 94025",
+                "phone_number": "+1 650-618-7714",
+                "cin": "ADX687",
+                "tax_registration_number": "TIN123456"
+            }
+        }
 
