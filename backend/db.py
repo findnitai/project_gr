@@ -1,8 +1,6 @@
 from model import Client
 import motor.motor_asyncio
 
-# 17a94049-81eb-41c1-8cbb-98bdcb2541bc
-# zbtvrhuw
 
 conn = 'mongodb+srv://nitai:Headtotoe%40123..@cluster0.ekp3r.mongodb.net'
 client = motor.motor_asyncio.AsyncIOMotorClient(conn)
