@@ -1,9 +1,10 @@
 from fastapi import FastAPI, HTTPException, Body, status
 from fastapi.middleware.cors import CORSMiddleware
-from model import Client, ClientLogin
+from model import Client, ClientLogin, Employee
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
-from db import create_client_login, add_client_details, fetch_client_login, fetch_client_info
+from db import create_client_login, add_client_details, fetch_client_login, fetch_client_info, update_client_record
+from db import MongoDatabase
 
 app = FastAPI()
 
@@ -53,3 +54,21 @@ async def get_client_info(email: str):
     if response:
         return response
     raise HTTPException(404, "There is no client with this id")
+
+
+@app.post("/api/add_employee/")
+async def add_employee_to_client(client_email : str, data : Employee = Body(...)):
+    data = jsonable_encoder(data)
+    query = {"email" : client_email}
+    employee_email = data["email"]
+    update = {"$push":{"employees" : data}}
+    response = await update_client_record(query, employee_email, update)
+    if response:
+        return response
+    raise HTTPException(400, "Bad request for adding employee to employer")
+
+
+@app.post("api/update_employee_details/")
+async def update_employee_details(client_email:str, employee_email:str, data: Employee = Body(...)):
+    return {"detail" : "Under Construction"}
+

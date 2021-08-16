@@ -42,6 +42,7 @@ class Employee(BaseModel):
     name: str = Field(...)
     status: str = Field(...)
     offer: float = Field(...)
+    currency: str = Field(...)
 
 
 class Client(BaseModel):
@@ -52,7 +53,7 @@ class Client(BaseModel):
     phone_number: str = Field(...)
     cin: Optional[str] = None
     tax_registration_number: Optional[str] = None
-    # employees: List[Employee]
+    employees: Optional[List[Employee]] = None
 
     class Config:
         arbitrary_types_allowed = True
