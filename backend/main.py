@@ -1,10 +1,14 @@
-from fastapi import FastAPI, HTTPException, Body, status
+from typing import Hashable
+from fastapi import FastAPI, HTTPException, Body, status, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from model import Client, ClientLogin, Employee
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
+from fastapi.security import OAuth2PasswordRequestForm
 from db import create_client_login, add_client_details, fetch_client_login, fetch_client_info, update_client_record
-from db import MongoDatabase
+from hash import Hash
+from auth import create_access_token
+
 
 app = FastAPI()
 
@@ -22,6 +26,27 @@ app.add_middleware(
 @app.get("/")
 def check_status():
     return {"Message": "Server is up"}
+
+
+@app.post('/api/register/')
+async def create_client(request:ClientLogin):
+    hashed_pass = Hash.bcrypt(request.password)
+    client_object = jsonable_encoder(request)
+    client_object["password"] = hashed_pass
+    response = await create_client_login(client_object)
+    return JSONResponse(status_code=status.HTTP_201_CREATED, content=response)
+
+
+@app.post('/api/login/v2/')
+async def login_client(request:OAuth2PasswordRequestForm = Depends()):
+    client = await fetch_client_login(request.username)
+    print(client)
+    if not client:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail = f'No user found with this {request.username} username')
+    if not Hash.verify(client["password"] , request.password):
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail = f'Wrong Username or password')
+    access_token = create_access_token(data={"sub": client["email"] })
+    return {"access_token": access_token, "token_type": "bearer"}
 
 
 @app.post("/api/login/", response_description="Add new client", response_model=ClientLogin)

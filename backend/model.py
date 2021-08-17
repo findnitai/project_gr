@@ -18,10 +18,17 @@ class PyObjectId(ObjectId):
     def __modify_schema__(cls, field_schema):
         field_schema.update(type="string")
 
+class TokenData(BaseModel):
+    client_email : Optional[str] = None
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
 
 class ClientLogin(BaseModel):
     id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
-    email: EmailStr = Field(...)
+    username: EmailStr = Field(...)
     password: str = Field(...)
 
     class Config:
