@@ -47,6 +47,9 @@ async def fetch_client_info(client_email):
 
 
 async def update_client_record(query, employee_email,  update):
+    '''
+    Use this only to add employee to Client list, update will be a different API
+    '''
     client_info =  await collection.find_one(query)
     if not client_info:
         return {"detail" : "Client does not exist!"}
